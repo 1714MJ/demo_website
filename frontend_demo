@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waste Segregation Identifier</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #2d6a4f;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    input[type="text"], input[type="file"] {
+      padding: 10px;
+      width: 70%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      background: #40916c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1b4332;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .biodegradable { background: #d8f3dc; color: #2d6a4f; }
+    .recyclable { background: #caf0f8; color: #023e8a; }
+    .hazardous { background: #ffe5ec; color: #9d0208; }
+    .general { background: #f1faee; color: #1d3557; }
+    img {
+      margin-top: 10px;
+      max-width: 200px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>♻ Waste Segregation Identifier</h1>
+  <div class="container">
+    <!-- Text Search -->
+    <input type="text" id="itemInput" placeholder="Enter a waste item (e.g., plastic bottle)">
+    <br>
+    <button onclick="identifyWaste()">🔍 Check Item</button>
+    <br><br>
+
+    <!-- Image Upload -->
+    <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+    <br>
+    <button onclick="identifyFromImage()">🖼 Identify Uploaded Image</button>
+    <br><br>
+
+    <!-- Capture Image from Camera -->
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="previewCameraImage(event)">
+    <br>
+    <button onclick="identifyFromCamera()">📷 Identify Captured Image</button>
+
+    <div id="result" class="result"></div>
+    <img id="preview" src="" alt="">
+  </div>
+
+  <script>
+    const wasteData = {
+      "banana": { category: "Biodegradable", class: "biodegradable" },
+      "plastic": { category: "Recyclable", class: "recyclable" },
+      "glass": { category: "Recyclable", class: "recyclable" },
+      "battery": { category: "Hazardous", class: "hazardous" },
+      "paper": { category: "Recyclable", class: "recyclable" },
+      "food": { category: "Biodegradable", class: "biodegradable" },
+      "styrofoam": { category: "General Waste", class: "general" }
+    };
+
+    function identifyWaste() {
+      const input = document.getElementById("itemInput").value.toLowerCase();
+      showResult(input);
+    }
+
+    function previewImage(event) {
+      const preview = document.getElementById("preview");
+      preview.src = URL.createObjectURL(event.target.files[0]);
+    }
+
+    function previewCameraImage(event) {
+      const preview = document.getElementById("preview");
+      preview.src = URL.createObjectURL(event.target.files[0]);
+    }
+
+    function identifyFromImage() {
+      const fileInput = document.getElementById("imageInput");
+      if (fileInput.files.length === 0) {
+        alert("Please upload an image.");
+        return;
+      }
+      const fileName = fileInput.files[0].name.toLowerCase();
+      checkWasteFromFile(fileName);
+    }
+
+    function identifyFromCamera() {
+      const fileInput = document.getElementById("cameraInput");
+      if (fileInput.files.length === 0) {
+        alert("Please capture an image.");
+        return;
+      }
+      const fileName = fileInput.files[0].name.toLowerCase();
+      checkWasteFromFile(fileName);
+    }
+
+    function checkWasteFromFile(fileName) {
+      let matchedKey = Object.keys(wasteData).find(key => fileName.includes(key));
+      if (matchedKey) {
+        showResult(matchedKey);
+      } else {
+        showResult("unknown");
+      }
+    }
+
+    function showResult(key) {
+      const resultDiv = document.getElementById("result");
+      if (wasteData[key]) {
+        resultDiv.innerHTML = ${key} → ${wasteData[key].category};
+        resultDiv.className = result ${wasteData[key].class};
+      } else {
+        resultDiv.innerHTML = "Item not found in database. Please try another.";
+        resultDiv.className = "result general";
+      }
+    }
+  </script>
+</body>
+</html>
